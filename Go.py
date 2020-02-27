@@ -16,6 +16,8 @@ screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption('7x7 Go')
 screen.fill(BLACK)
 
+"testttttttttt"
+
 # Draw Go board
 pygame.draw.rect(screen, MUSTARD, (50, 50, 500, 500))
 
