@@ -1,4 +1,4 @@
-import pygame, time, random
+import pygame, time, random, sys
 
 
 # Set up game
@@ -13,6 +13,47 @@ MUSTARD = (255, 173, 1)
 # Screen Setting
 WINDOWWIDTH = 600
 WINDOWHEIGHT = 600
+
+def myround(x, base=50):
+    return base * round(x/base)
+
+def check_double(move, x_pos, y_pos):
+    double = False
+
+    for x in move:
+        if x[0] == x_pos and x[1] == y_pos:
+            double = True
+
+    return double
+
+def wait_for_player_to_press_key(screen, move, count):
+    pressed = False
+    while not pressed:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if e.type == pygame.MOUSEBUTTONUP:
+                x_pos = pygame.mouse.get_pos()[0]
+                y_pos = pygame.mouse.get_pos()[1]
+                if not check_double(move,x_pos,y_pos):
+                    pygame.draw.circle(screen, BLACK, (myround(x_pos), myround(y_pos)), 25)
+                    move.append([myround(x_pos), myround(y_pos)])
+                return
+
+
+
+def user_play(screen):
+    ev = pygame.event.get()
+
+    for event in ev:
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            pygame.draw.circle(screen, BLACK, pos, 25)
 
 
 def main():
@@ -51,27 +92,45 @@ def main():
 
     pygame.display.update()
 
+
+
     # Main loop(it stops screen for now to check)
     count = 1
+    move = []
     play_game = True
     while play_game:
 
-        if count == 40:
+        if count == 70:
             play_game = False
 
-        if count % 2 == 0:
-            mainClock.tick(3)
-            pygame.draw.circle(screen, BLACK, (random.randrange(100, 500, 50), random.randrange(100, 500, 50)), 25)
-            count = count + 1
+        if count % 2 != 0:
+            wait_for_player_to_press_key(screen, move, count)
+            count += 1
+            pygame.display.update()
+            pygame.time.wait(900)
 
-        else :
-            mainClock.tick(3)
-            pygame.draw.circle(screen, WHITE, (random.randrange(100, 500, 50), random.randrange(100, 500, 50)), 25)
-            count = count + 1
+        if count % 2 == 0:
+            ai_x_pos = random.randrange(100, 500, 50)
+            ai_y_pos = random.randrange(100, 500, 50)
+
+            if not check_double(move, ai_x_pos, ai_y_pos):
+                pygame.draw.circle(screen, WHITE, (ai_x_pos, ai_y_pos), 25)
+                move.append([ai_x_pos, ai_y_pos])
+                count += 1
+
+
+        #else:
+         #   mainClock.tick(10)
+          #  pygame.draw.circle(screen, WHITE, (random.randrange(100, 500, 50), random.randrange(100, 500, 50)), 25)
+           # count = count + 1
+
+
 
         pygame.display.update()
         mainClock.tick(60)
 
+    pygame.display.update()
+#    wait_for_player_to_press_key(screen)
 
 
 
