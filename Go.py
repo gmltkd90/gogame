@@ -1,4 +1,4 @@
-import pygame, time, random, sys
+import pygame, random, sys
 
 
 # Set up game
@@ -14,8 +14,10 @@ MUSTARD = (255, 173, 1)
 WINDOWWIDTH = 600
 WINDOWHEIGHT = 600
 
+
 def myround(x, base=50):
     return base * round(x/base)
+
 
 def check_double(move, x_pos, y_pos):
     double = False
@@ -26,7 +28,21 @@ def check_double(move, x_pos, y_pos):
 
     return double
 
-def wait_for_player_to_press_key(screen, move, count):
+
+def wait_for_player_to_press_key(screen):
+    pressed = False
+    while not pressed:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+
+def wait_for_player_to_play(screen, move, count):
     pressed = False
     while not pressed:
         for e in pygame.event.get():
@@ -44,7 +60,6 @@ def wait_for_player_to_press_key(screen, move, count):
                     pygame.draw.circle(screen, BLACK, (myround(x_pos), myround(y_pos)), 25)
                     move.append([myround(x_pos), myround(y_pos)])
                 return
-
 
 
 def user_play(screen):
@@ -92,8 +107,6 @@ def main():
 
     pygame.display.update()
 
-
-
     # Main loop(it stops screen for now to check)
     count = 1
     move = []
@@ -104,7 +117,7 @@ def main():
             play_game = False
 
         if count % 2 != 0:
-            wait_for_player_to_press_key(screen, move, count)
+            wait_for_player_to_play(screen, move, count)
             count += 1
             pygame.display.update()
             pygame.time.wait(900)
@@ -118,24 +131,16 @@ def main():
                 move.append([ai_x_pos, ai_y_pos])
                 count += 1
 
-
         #else:
          #   mainClock.tick(10)
           #  pygame.draw.circle(screen, WHITE, (random.randrange(100, 500, 50), random.randrange(100, 500, 50)), 25)
            # count = count + 1
 
-
-
         pygame.display.update()
         mainClock.tick(60)
 
     pygame.display.update()
-#    wait_for_player_to_press_key(screen)
+    wait_for_player_to_press_key(screen)
 
-
-
-
-#pygame.display.flip()
-#mainClock.tick(200)
 
 main()
