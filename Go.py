@@ -15,10 +15,12 @@ WINDOWWIDTH = 600
 WINDOWHEIGHT = 600
 
 
+# round up user's click position
 def myround(x, base=50):
     return base * round(x/base)
 
 
+# check if there is other stones on same spot
 def check_double(move, x_pos, y_pos):
     double = False
 
@@ -29,6 +31,7 @@ def check_double(move, x_pos, y_pos):
     return double
 
 
+# User's input for exit game or restart the game
 def wait_for_player_to_press_key(screen):
     pressed = False
     while not pressed:
@@ -42,7 +45,8 @@ def wait_for_player_to_press_key(screen):
                     sys.exit()
 
 
-def wait_for_player_to_play(screen, move, count):
+# Player movement input
+def wait_for_player_to_play(screen, move):
     pressed = False
     while not pressed:
         for e in pygame.event.get():
@@ -58,7 +62,7 @@ def wait_for_player_to_play(screen, move, count):
                 y_pos = pygame.mouse.get_pos()[1]
                 if not check_double(move,x_pos,y_pos):
                     pygame.draw.circle(screen, BLACK, (myround(x_pos), myround(y_pos)), 25)
-                    move.append([myround(x_pos), myround(y_pos)])
+                    move.append([myround(x_pos), myround(y_pos), 1])
                 return
 
 
@@ -69,6 +73,68 @@ def user_play(screen):
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             pygame.draw.circle(screen, BLACK, pos, 25)
+
+
+# check if there is other stones on up,down,right,left
+def check_next(move, x_pos, y_pos):
+    next = False
+
+    for x in move:
+        if (x[0] - 50) == x_pos and (x[1]) == y_pos:
+            next is True
+        if (x[0] + 50) == x_pos and (x[1]) == y_pos:
+            next is True
+        if (x[0]) == x_pos and (x[1] - 50) == y_pos:
+            next is True
+        if (x[0]) == x_pos and (x[1] + 50) == y_pos:
+            next is True
+
+    return next
+
+
+# Checking if there is other stones on diagonal position
+def check_dia(move, x_pos, y_pos):
+    dia = False
+
+    for x in move:
+        if (x[0] - 50) == x_pos and (x[1] + 50) == y_pos:
+            next is True
+        if (x[0] - 50) == x_pos and (x[1] - 50) == y_pos:
+            next is True
+        if (x[0] + 50) == x_pos and (x[1] - 50) == y_pos:
+            next is True
+        if (x[0] + 50) == x_pos and (x[1] + 50) == y_pos:
+            next is True
+
+    return dia
+
+
+# Adding AI condition to play on fist few movement
+def fist_few_move(screen, move):
+
+    if not check_double(move, 200, 200):
+        if not check_next(move, 200, 200):
+            if not check_dia(move, 200, 200):
+                pygame.draw.circle(screen, WHITE, (200, 200), 25)
+                move.append([200, 200, 2])
+
+    elif not check_double(move, 400, 400):
+        if not check_next(move, 400, 400):
+            if not check_dia(move, 400, 400):
+                pygame.draw.circle(screen, WHITE, (400, 400), 25)
+                move.append([400, 400, 2])
+
+    elif not check_double(move, 200, 400):
+        if not check_next(move, 200, 400):
+            if not check_dia(move, 200, 400):
+                pygame.draw.circle(screen, WHITE, (200, 400), 25)
+                move.append([200, 400, 2])
+
+    elif not check_double(move, 400, 200):
+        if not check_next(move, 400, 200):
+            if not check_dia(move, 400, 200):
+                pygame.draw.circle(screen, WHITE, (400, 200), 25)
+                move.append([400, 200, 2])
 
 
 def main():
@@ -110,6 +176,7 @@ def main():
     # Main loop(it stops screen for now to check)
     count = 1
     move = []
+    # move contain ( x-coordinate, y-coordinate, identification)
     play_game = True
     while play_game:
 
@@ -123,18 +190,18 @@ def main():
             pygame.time.wait(900)
 
         if count % 2 == 0:
-            ai_x_pos = random.randrange(100, 500, 50)
-            ai_y_pos = random.randrange(100, 500, 50)
 
-            if not check_double(move, ai_x_pos, ai_y_pos):
-                pygame.draw.circle(screen, WHITE, (ai_x_pos, ai_y_pos), 25)
-                move.append([ai_x_pos, ai_y_pos])
+            if count < 5:
+                fist_few_move(screen, move, count)
                 count += 1
+            else:
+                ai_x_pos = random.randrange(100, 500, 50)
+                ai_y_pos = random.randrange(100, 500, 50)
 
-        #else:
-         #   mainClock.tick(10)
-          #  pygame.draw.circle(screen, WHITE, (random.randrange(100, 500, 50), random.randrange(100, 500, 50)), 25)
-           # count = count + 1
+                if not check_double(move, ai_x_pos, ai_y_pos):
+                    pygame.draw.circle(screen, WHITE, (ai_x_pos, ai_y_pos), 25)
+                    move.append([ai_x_pos, ai_y_pos, 2])
+                    count += 1
 
         pygame.display.update()
         mainClock.tick(60)
