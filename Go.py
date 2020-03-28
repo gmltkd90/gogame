@@ -91,6 +91,45 @@ def check_next(move, x_pos, y_pos):
 
     return next
 
+def check_up(move, x_pos, y_pos):
+    up = False
+
+    for x in move:
+        if (x[0]) == x_pos and (x[1] - 50) == y_pos:
+            up = True
+
+    return up
+
+
+def check_down(move, x_pos, y_pos):
+    down = False
+
+    for x in move:
+        if (x[0]) == x_pos and (x[1] + 50) == y_pos:
+            down = True
+
+    return down
+
+
+def check_right(move, x_pos, y_pos):
+    right = False
+
+    for x in move:
+        if (x[0] + 50) == x_pos and (x[1]) == y_pos:
+            right = True
+
+    return right
+
+
+def check_left(move, x_pos, y_pos):
+    left = False
+
+    for x in move:
+        if (x[0] - 50) == x_pos and (x[1]) == y_pos:
+            left = True
+
+    return left
+
 
 # Checking if there is other stones on diagonal position
 def check_dia(move, x_pos, y_pos):
@@ -135,6 +174,11 @@ def fist_few_move(screen, move):
             if not check_dia(move, 400, 200):
                 pygame.draw.circle(screen, WHITE, (400, 200), 25)
                 move.append([400, 200, 2])
+
+
+def last_movement(move):
+    size = len(move)
+
 
 
 def main():
